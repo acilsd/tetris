@@ -1,19 +1,13 @@
 import styles from './helpers/style.css';
-import Tetris from './components/game';
 import { keys } from './helpers/keys';
+import Connector from './connector';
 
-const gameField = [];
-const players = Array.from(document.querySelectorAll('.player'));
-
-players.forEach((el) => {
-  const gameInstance = new Tetris(el);
-  gameField.push(gameInstance);
-});
+const gameManager = new Connector(document);
 
 //console.log(gameField);
 const gameControls = (e) => {
   keys.forEach((key, idx) => {
-    const player = gameField[idx].player;
+    const player = gameManager.instances[idx].player;
 
     if (event.type === 'keydown') {
       switch(e.keyCode) {
