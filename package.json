@@ -4,7 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "start": "nodemon public/server.js",
+    "start": "nodemon server.js",
     "build": "cross-env NODE_ENV=production webpack --env.prod=true",
     "wds": "webpack-dev-server",
     "test": "echo \"Error: no test specified\" && exit 1"
