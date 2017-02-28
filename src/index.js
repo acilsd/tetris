@@ -1,32 +1,50 @@
-import Tetris from './game';
 import styles from './helpers/style.css';
+import Tetris from './components/game';
+import { keys } from './helpers/keys';
 
-const canvas = document.getElementById('mount');
-const score = document.getElementById('score');
-const context = canvas.getContext('2d');
+const gameField = [];
+const players = Array.from(document.querySelectorAll('.player'));
 
-context.scale(20, 20);
-
-const newGame = new Tetris(canvas, score, context);
-
-newGame.init();
-
-document.addEventListener('keydown', e => {
-  switch (e.keyCode) {
-  case 37:
-    newGame.playerMove(-1);
-    break;
-  case 39:
-    newGame.playerMove(1);
-    break;
-  case 40:
-    newGame.playerDrop();
-    break;
-  case 65:
-    newGame.playerRotate(-1);
-    break;
-  case 68:
-    newGame.playerRotate(1);
-    break;
-  }
+players.forEach((el) => {
+  const gameInstance = new Tetris(el);
+  gameField.push(gameInstance);
 });
+
+//console.log(gameField);
+const gameControls = (e) => {
+  keys.forEach((key, idx) => {
+    const player = gameField[idx].player;
+
+    if (event.type === 'keydown') {
+      switch(e.keyCode) {
+      case key[0]:
+        player.move(-1);
+        break;
+      case key[1]:
+        player.move(1);
+        break;
+      case key[2]:
+        player.rotate(-1);
+        break;
+      case key[3]:
+        player.rotate(1);
+        break;
+      }
+    }
+
+    if (event.keyCode === key[4]) {
+      if (event.type === 'keydown') {
+        if (player.dropInterval !== player.DROP_FAST) {
+          player.drop();
+          player.dropInterval = player.DROP_FAST;
+        }
+      } else {
+        player.dropInterval = player.DROP_SLOW;
+      }
+    }
+
+  });
+};
+
+document.addEventListener('keydown', gameControls);
+document.addEventListener('keyup', gameControls);
