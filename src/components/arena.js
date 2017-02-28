@@ -6,6 +6,7 @@ export default class Arena {
     }
     this.matrix = matrix;
   }
+
   clear = () => this.matrix.forEach(row => row.fill(0));
 
   collide = (player) =>  {
