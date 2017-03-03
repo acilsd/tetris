@@ -46,6 +46,26 @@ export default class Tetris {
     });
   }
 
+  serialize = () => {
+    return {
+      arena: {
+        matrix: this.arena.matrix,
+      },
+      player: {
+        matrix: this.player.matrix,
+        pos: this.player.pos,
+        score: this.player.score,
+      }
+    };
+  }
+
+  deserialize = (state) => {
+    this.arena = Object.assign(state.arena);
+    this.player = Object.assign(state.player);
+    this.updateScore(this.player.score);
+    this.draw();
+  }
+
   run = () => {
     this.update();
   }

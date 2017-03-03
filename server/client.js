@@ -5,6 +5,7 @@ class Client {
     this.connection = connection;
     this.id = id;
     this.session = null;
+    this.state = null;
   }
 
   broadcast(data) {

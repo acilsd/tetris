@@ -8,15 +8,16 @@ export default class Connector {
 
   updateGame = (peers) => {
     const me = peers.you;
-    const clients = peers.clients.filter((id) => id !== me);
-    clients.forEach(id => {
-      if (!this.peers.has(id)) {
+    const clients = peers.clients.filter(client => me !== client.id);
+    clients.forEach(client => {
+      if (!this.peers.has(client.id)) {
         const tetris = this.game.createPlayer();
-        this.peers.set(id, tetris);
+        tetris.deserialize(client.state);
+        this.peers.set(client.id, tetris);
       }
     });
     [...this.peers.entries()].forEach(([id, tetris]) => {
-      if (clients.indexOf(id) === -1) {
+      if (!clients.some(client => client.id === id)) {
         this.game.removePlayer(tetris);
         this.peers.delete(id);
       }
@@ -46,6 +47,8 @@ export default class Connector {
       window.location.hash = data.id;
     } else if (data.type === 'session-broadcast') {
       this.updateGame(data.peers);
+    } else if (data.type === 'state-update') {
+      this.updatePeer(data.clientId, data.fragment, data.state);
     }
   }
 
@@ -59,7 +62,7 @@ export default class Connector {
         this.send({
           type: 'state-update',
           fragment: 'player',
-          player: [type, value]
+          state: [type, value]
         });
       });
     });
@@ -69,22 +72,40 @@ export default class Connector {
         this.send({
           type: 'state-update',
           fragment: 'arena',
-          arena: [type, value]
+          state: [type, value]
         });
       });
     });
   }
 
+  updatePeer = (id, fragment, [prop, value]) => {
+    if (!this.peers.has(id)) {
+      console.error('no such id: ', id);
+      return;
+    }
+
+    const tetris = this.peers.get(id);
+    tetris[fragment][prop] = value;
+    if (prop === 'score') {
+      tetris.updateScore(value);
+    } else {
+      tetris.draw();
+    }
+  }
+
   init = () => {
     const sessionId = window.location.hash.split('#')[1];
+    const state = this.initGame.serialize();
     if (sessionId) {
       this.send({
         type: 'join-session',
-        id: sessionId
+        id: sessionId,
+        state,
       });
     } else {
       this.send({
-        type: 'create-session'
+        type: 'create-session',
+        state,
       });
     }
   }
