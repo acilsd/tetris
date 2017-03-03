@@ -15,17 +15,13 @@ export default class Tetris {
     this.colors = colors;
 
     let lastTime = 0;
-    const update = (time = 0) => {
+    this.update = (time = 0) => {
       const deltaTime = time - lastTime;
       lastTime = time;
-
       this.player.update(deltaTime);
-
       this.draw();
-      requestAnimationFrame(update);
+      requestAnimationFrame(this.update);
     };
-    update();
-
     this.updateScore(0);
   }
 
@@ -47,6 +43,10 @@ export default class Tetris {
     });
   }
 
+  run = () => {
+    this.update();
+  }
+
   updateScore = (score) => this.element.querySelector('.score').innerText = score;
-  
+
 }

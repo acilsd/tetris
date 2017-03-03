@@ -7,6 +7,7 @@ const gameManager = new PlayerInstance(document);
 
 const initPlayer = gameManager.createPlayer();
 initPlayer.element.classList.add('local');
+initPlayer.run();
 
 const connector = new Connector(gameManager);
 connector.connect('ws://localhost:8008');
