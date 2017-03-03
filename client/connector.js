@@ -14,6 +14,12 @@ export default class Connector {
         this.peers.set(id, tetris);
       }
     });
+    [...this.peers.entries()].forEach(([id, tetris]) => {
+      if (clients.indexOf(id) === -1) {
+        this.game.removePlayer(tetris);
+        this.peers.delete(id);
+      }
+    });
   }
 
   connect = (address) => {
