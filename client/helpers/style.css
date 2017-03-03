@@ -46,7 +46,11 @@ h3 {
 }
 
 canvas {
-  border: solid .2em #fff;
+  border: solid .2em #707077;
   height: 90vh;
   min-height: 400px;
+}
+
+.player.local canvas {
+  border: solid .3em #fff;
 }
