@@ -1,3 +1,5 @@
+import Events from '../helpers/events';
+
 export default class Arena {
   constructor(w, h) {
     const matrix = [];
@@ -5,9 +7,14 @@ export default class Arena {
       matrix.push(new Array(w).fill(0));
     }
     this.matrix = matrix;
+
+    this.events = new Events();
   }
 
-  clear = () => this.matrix.forEach(row => row.fill(0));
+  clear = () => {
+    this.matrix.forEach(row => row.fill(0));
+    this.events.emit('matrix', this.matrix);
+  }
 
   collide = (player) =>  {
     const [m, o] = [player.matrix, player.pos];
@@ -32,6 +39,7 @@ export default class Arena {
         }
       });
     });
+    this.events.emit('matrix', this.matrix);
   }
 
   sweep = () => {
@@ -49,6 +57,7 @@ export default class Arena {
       score += rowCount * 10;
       rowCount *= 2;
     }
+    this.events.emit('matrix', this.matrix);
     return score;
   }
 }

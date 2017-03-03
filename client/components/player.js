@@ -21,21 +21,25 @@ export default class Player {
 
   drop = () => {
     this.pos.y++;
+    this.dropCounter = 0;
     if (this.arena.collide(this)) {
       this.pos.y--;
       this.arena.merge(this);
       this.reset();
       this.score += this.arena.sweep();
       this.events.emit('score', this.score);
+      return;
     }
-    this.dropCounter = 0;
+    this.events.emit('pos', this.pos);
   }
 
   move = (dir) => {
     this.pos.x += dir;
     if (this.arena.collide(this)) {
       this.pos.x -= dir;
+      return;
     }
+    this.events.emit('pos', this.pos);
   }
 
   reset = () => {
@@ -49,6 +53,8 @@ export default class Player {
       this.score = 0;
       this.events.emit('score', this.score);
     }
+    this.events.emit('pos', this.pos);
+    this.events.emit('matris', this.matrix);
   }
 
   rotate = (dir) => {
@@ -64,6 +70,7 @@ export default class Player {
         return;
       }
     }
+    this.events.emit('matris', this.matrix);
   }
 
   rotateMatrix = (matrix, dir) => {

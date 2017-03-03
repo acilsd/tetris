@@ -56,6 +56,8 @@ server.on('connection', connect => {
       const session = getSession(data.id) || createSession(data.id);
       session.join(client);
       broadcast(session);
+    } else if (data.type === 'state-update') {
+      client.broadcast(data);
     }
   });
 

@@ -3,6 +3,7 @@ export default class Connector {
     this.connection = null;
     this.peers = new Map;
     this.game = game;
+    this.initGame = [...game.instances][0];
   }
 
   updateGame = (peers) => {
@@ -26,6 +27,7 @@ export default class Connector {
     this.connection = new WebSocket(address);
     this.connection.addEventListener('open', () => {
       this.init();
+      this.observeEvents();
     });
     this.connection.addEventListener('message', e => {
       console.info(`Message ${e.data} recieved`);/*eslint no-console: "off"*/
@@ -45,6 +47,32 @@ export default class Connector {
     } else if (data.type === 'session-broadcast') {
       this.updateGame(data.peers);
     }
+  }
+
+  observeEvents = () => {
+    const initGame = this.initGame;
+    const player = initGame.player;
+    const arena = initGame.arena;
+
+    ['pos', 'matrix', 'score'].forEach(type => {
+      player.events.listen(type, value => {
+        this.send({
+          type: 'state-update',
+          fragment: 'player',
+          player: [type, value]
+        });
+      });
+    });
+
+    ['arena'].forEach(type => {
+      player.events.listen(type, value => {
+        this.send({
+          type: 'state-update',
+          fragment: 'arena',
+          arena: [type, value]
+        });
+      });
+    });
   }
 
   init = () => {

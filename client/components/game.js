@@ -8,13 +8,14 @@ export default class Tetris {
     this.canvas = el.querySelector('canvas');
     this.context = this.canvas.getContext('2d');
     this.context.scale(20, 20);
+    this.colors = colors;
 
     this.arena = new Arena(12, 20);
     this.player = new Player(this);
+
     this.player.events.listen('score', score => {
       this.updateScore(score);
     });
-    this.colors = colors;
 
     let lastTime = 0;
     this.update = (time = 0) => {
