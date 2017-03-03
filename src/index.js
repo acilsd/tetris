@@ -4,10 +4,13 @@ import Connector from './connector';
 
 const gameManager = new Connector(document);
 
-//console.log(gameField);
+window.gameManager = gameManager;
+
+const initPlayer = gameManager.createPlayer();
+
 const gameControls = (e) => {
   keys.forEach((key, idx) => {
-    const player = gameManager.instances[idx].player;
+    const player = initPlayer.player;
 
     if (event.type === 'keydown') {
       switch(e.keyCode) {
