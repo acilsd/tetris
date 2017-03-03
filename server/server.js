@@ -1,4 +1,9 @@
 /*eslint no-console: "off"*/
+const express = require('express');
+const path = require('path');
+const app = express();
+const port = process.env.PORT || 8090;
+
 const GameServer = require('ws').Server;
 const Session = require('./session');
 const Client = require('./client');
@@ -90,9 +95,10 @@ server.on('connection', connect => {
   });
 });
 
-// const express = require('express');
-// const app = express();
-// const port = 3009;
-// app.listen(port, () => {
-//   console.info(`Server listening on port: ${port}`);
-// });
+app.use(express.static('./public/'))
+    .get('*',(req, res) => {
+      res.sendFile(__dirname + '/index.html');
+    })
+    .listen(port, () => {
+      console.info(`Server listening on port: ${port}`);
+    });
