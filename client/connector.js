@@ -77,6 +77,10 @@ export default class Connector {
         this.peers.delete(id);
       }
     });
+    const sorted = peers.clients.map(client => {
+      return this.peers.get(client.id) || this.initGame;
+    });
+    this.game.sortPlayers(sorted);
   }
 
   updatePeer = (id, fragment, [key, value]) => {

@@ -21,4 +21,10 @@ export default class PlayerInstance {
     this.instances.delete(player);
     this.document.body.removeChild(player.element);
   }
+
+  sortPlayers = (game) => {
+    game.forEach(tetris => {
+      this.document.body.appendChild(tetris.element);
+    });
+  }
 }
