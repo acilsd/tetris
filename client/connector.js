@@ -5,5 +5,8 @@ export default class Connector {
 
   connect = (address) => {
     this.connection = new WebSocket(address);
+    this.connection.addEventListener('open', () => {      
+      this.connection.send('create-session');
+    });
   }
 }

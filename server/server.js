@@ -1,18 +1,41 @@
 /*eslint no-console: "off"*/
-const path = require('path');
-const express = require('express');
-const compression = require('compression');
+const GameServer = require('ws').Server;
+const Session = require('./session');
+const Client = require('./client');
 
-const app = express();
-const port = process.env.PORT || 8090;
+const server = new GameServer({ port: 8008 });
+const sessions = new Map;
 
-app.use(compression());
+const createId = (len = 6, chars = 'abcdefghjkmnopqrstwxyz0123456789') => {
+  let id = '';
+  while (len--) {
+    id += chars[Math.random() * chars.length | 0];
+  }
+  return id;
+};
 
-app.use(express.static('./public'))
-    .get('*',(req, res) => {
-      res.sendFile(__dirname + '/public/index.html');
-    });
+server.on('connection', connect => {
+  console.info('connected!');
+  const client = new Client(connect);
+  connect.on('message', msg => {
+    if (msg === 'create-session') {
+      const id = createId();
+      const session = new Session(id);
+      session.join(client);
+      sessions.set(session.id, session);
+      console.log(sessions);
+    }
+  });
 
-app.listen(port, () => {
-  console.info(`Server listening on port: ${port}`);
+  connect.on('close', () => {
+    console.info('disconnected!');
+    const session = client.session;
+    if (session) {
+      session.leave(client);
+      if (session.clients.size === 0) {
+        sessions.delete(session.id);
+      }
+    }
+  });
+
 });

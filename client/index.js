@@ -4,7 +4,7 @@ import PlayerInstance from './player-creator';
 import Connector from './connector';
 
 const connector = new Connector();
-//connector.connect('localhost');
+connector.connect('ws://localhost:8008');
 
 const gameManager = new PlayerInstance(document);
 window.gameManager = gameManager;

@@ -10,7 +10,7 @@ function includePostCss() {
   ];
 }
 
-const srcPath = path.join(__dirname, './src');
+const srcPath = path.join(__dirname, './client');
 const buildPath = path.join(__dirname, './public');
 
 module.exports = function(env) {
