@@ -9,7 +9,7 @@ initPlayer.element.classList.add('local');
 initPlayer.run();
 
 const connector = new Connector(gameManager);
-connector.connect('ws://' + window.location.hostname + ':8008');
+connector.connect('wss://' + window.location.hostname + ':8008');
 
 const gameControls = (e) => {
   keys.forEach((key, idx) => {
