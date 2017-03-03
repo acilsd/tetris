@@ -5,8 +5,11 @@ export default class Connector {
 
   connect = (address) => {
     this.connection = new WebSocket(address);
-    this.connection.addEventListener('open', () => {      
+    this.connection.addEventListener('open', () => {
       this.connection.send('create-session');
+    });
+    this.connection.addEventListener('message', e => {
+      console.info(`Message ${e.data} recieved`);/*eslint no-console: "off"*/
     });
   }
 }

@@ -23,7 +23,7 @@ server.on('connection', connect => {
       const session = new Session(id);
       session.join(client);
       sessions.set(session.id, session);
-      console.log(sessions);
+      client.send(session.id);
     }
   });
 
