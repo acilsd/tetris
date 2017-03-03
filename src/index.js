@@ -1,11 +1,13 @@
 import styles from './helpers/style.css';
 import { keys } from './helpers/keys';
+import PlayerInstance from './player-creator';
 import Connector from './connector';
 
-const gameManager = new Connector(document);
+const connector = new Connector();
+//connector.connect('localhost');
 
+const gameManager = new PlayerInstance(document);
 window.gameManager = gameManager;
-
 const initPlayer = gameManager.createPlayer();
 
 const gameControls = (e) => {
