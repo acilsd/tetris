@@ -4,13 +4,12 @@ import PlayerInstance from './player-creator';
 import Connector from './connector';
 
 const gameManager = new PlayerInstance(document);
-
 const initPlayer = gameManager.createPlayer();
 initPlayer.element.classList.add('local');
 initPlayer.run();
 
 const connector = new Connector(gameManager);
-connector.connect('ws://localhost:8008');
+connector.connect('ws://' + window.location.hostname + ':8008');
 
 const gameControls = (e) => {
   keys.forEach((key, idx) => {

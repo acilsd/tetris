@@ -54,7 +54,7 @@ export default class Player {
       this.events.emit('score', this.score);
     }
     this.events.emit('pos', this.pos);
-    this.events.emit('matris', this.matrix);
+    this.events.emit('matrix', this.matrix);
   }
 
   rotate = (dir) => {
@@ -70,7 +70,7 @@ export default class Player {
         return;
       }
     }
-    this.events.emit('matris', this.matrix);
+    this.events.emit('matrix', this.matrix);
   }
 
   rotateMatrix = (matrix, dir) => {

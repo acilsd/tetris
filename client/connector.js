@@ -6,24 +6,6 @@ export default class Connector {
     this.initGame = [...game.instances][0];
   }
 
-  updateGame = (peers) => {
-    const me = peers.you;
-    const clients = peers.clients.filter(client => me !== client.id);
-    clients.forEach(client => {
-      if (!this.peers.has(client.id)) {
-        const tetris = this.game.createPlayer();
-        tetris.deserialize(client.state);
-        this.peers.set(client.id, tetris);
-      }
-    });
-    [...this.peers.entries()].forEach(([id, tetris]) => {
-      if (!clients.some(client => client.id === id)) {
-        this.game.removePlayer(tetris);
-        this.peers.delete(id);
-      }
-    });
-  }
-
   connect = (address) => {
     this.connection = new WebSocket(address);
     this.connection.addEventListener('open', () => {
@@ -55,38 +37,56 @@ export default class Connector {
   observeEvents = () => {
     const initGame = this.initGame;
     const player = initGame.player;
-    const arena = initGame.arena;
 
-    ['pos', 'matrix', 'score'].forEach(type => {
-      player.events.listen(type, value => {
+    ['pos', 'matrix', 'score'].forEach(key => {
+      player.events.listen(key, () => {
         this.send({
           type: 'state-update',
           fragment: 'player',
-          state: [type, value]
+          state: [key, player[key]],
         });
       });
     });
 
-    ['arena'].forEach(type => {
-      player.events.listen(type, value => {
+    const arena = initGame.arena;
+
+    ['matrix'].forEach(key => {
+      arena.events.listen(key, () => {
         this.send({
           type: 'state-update',
           fragment: 'arena',
-          state: [type, value]
+          state: [key, arena[key]],
         });
       });
     });
   }
 
-  updatePeer = (id, fragment, [prop, value]) => {
+  updateGame = (peers) => {
+    const me = peers.you;
+    const clients = peers.clients.filter(client => me !== client.id);
+    clients.forEach(client => {
+      if (!this.peers.has(client.id)) {
+        const tetris = this.game.createPlayer();
+        tetris.deserialize(client.state);
+        this.peers.set(client.id, tetris);
+      }
+    });
+    [...this.peers.entries()].forEach(([id, tetris]) => {
+      if (!clients.some(client => client.id === id)) {
+        this.game.removePlayer(tetris);
+        this.peers.delete(id);
+      }
+    });
+  }
+
+  updatePeer = (id, fragment, [key, value]) => {
     if (!this.peers.has(id)) {
       console.error('no such id: ', id);
       return;
     }
-
     const tetris = this.peers.get(id);
-    tetris[fragment][prop] = value;
-    if (prop === 'score') {
+    tetris[fragment][key] = value;
+    if (key === 'score') {
       tetris.updateScore(value);
     } else {
       tetris.draw();

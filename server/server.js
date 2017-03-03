@@ -19,7 +19,10 @@ const createClient = (connection, id = createId()) => {
 };
 
 const createSession = (id = createId()) => {
-  if (sessions.has(id)) throw new Error(`Session ${id} already exists`);
+  if (sessions.has(id)) {
+    throw new Error(`Session ${id} already exists`);
+  }
+
   const session = new Session(id);
   sessions.set(id, session);
   return session;
@@ -29,7 +32,7 @@ const getSession = (id) => {
   return sessions.get(id);
 };
 
-const broadcast = (session) => {
+const broadcastSession = (session) => {
   const clients = [...session.clients];
   clients.forEach(client => {
     client.send({
@@ -50,6 +53,7 @@ const broadcast = (session) => {
 server.on('connection', connect => {
   console.info('connected!');
   const client = createClient(connect);
+
   connect.on('message', msg => {
     const data = JSON.parse(msg);
 
@@ -65,10 +69,10 @@ server.on('connection', connect => {
       const session = getSession(data.id) || createSession(data.id);
       session.join(client);
       client.state = data.state;
-      broadcast(session);
+      broadcastSession(session);
     } else if (data.type === 'state-update') {
-      const [prop, value] = data.state;
-      client.state[data.fragment][prop] = value;
+      const [key, value] = data.state;
+      client.state[data.fragment][key] = value;
       client.broadcast(data);
     }
   });
@@ -82,7 +86,7 @@ server.on('connection', connect => {
         sessions.delete(session.id);
       }
     }
-    broadcast(session);
+    broadcastSession(session);
   });
 });
 

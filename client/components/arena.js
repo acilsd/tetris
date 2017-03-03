@@ -8,7 +8,7 @@ export default class Arena {
     }
     this.matrix = matrix;
 
-    this.events = new Events();
+    this.events = new Events;
   }
 
   clear = () => {
