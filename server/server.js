@@ -14,16 +14,48 @@ const createId = (len = 6, chars = 'abcdefghjkmnopqrstwxyz0123456789') => {
   return id;
 };
 
+const createClient = (connection, id = createId()) => {
+  return new Client(connection, id);
+};
+
+const createSession = (id = createId()) => {
+  if (sessions.has(id)) throw new Error(`Session ${id} already exists`);
+  const session = new Session(id);
+  sessions.set(id, session);
+  return session;
+};
+
+const getSession = (id) => {
+  return sessions.get(id);
+};
+
+const broadcast = (session) => {
+  const clients = [...session.clients];
+  clients.forEach(client => {
+    client.send({
+      type: 'session-broadcast',
+      peers: { you: client.id, clients: clients.map(client => client.id) },
+    });
+  });
+};
+
 server.on('connection', connect => {
   console.info('connected!');
-  const client = new Client(connect);
+  const client = createClient(connect);
   connect.on('message', msg => {
-    if (msg === 'create-session') {
-      const id = createId();
-      const session = new Session(id);
+    const data = JSON.parse(msg);
+
+    if (data.type === 'create-session') {
+      const session = createSession();
       session.join(client);
-      sessions.set(session.id, session);
-      client.send(session.id);
+      client.send({
+        type: 'session-created',
+        id: session.id,
+      });
+    } else if (data.type === 'join-session') {
+      const session = getSession(data.id) || createSession(data.id);
+      session.join(client);
+      broadcast(session);
     }
   });
 
@@ -36,6 +68,13 @@ server.on('connection', connect => {
         sessions.delete(session.id);
       }
     }
+    broadcast(session);
   });
-
 });
+
+// const express = require('express');
+// const app = express();
+// const port = 3009;
+// app.listen(port, () => {
+//   console.info(`Server listening on port: ${port}`);
+// });

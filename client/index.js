@@ -3,12 +3,12 @@ import { keys } from './helpers/keys';
 import PlayerInstance from './player-creator';
 import Connector from './connector';
 
-const connector = new Connector();
-connector.connect('ws://localhost:8008');
-
 const gameManager = new PlayerInstance(document);
-window.gameManager = gameManager;
+
 const initPlayer = gameManager.createPlayer();
+
+const connector = new Connector(gameManager);
+connector.connect('ws://localhost:8008');
 
 const gameControls = (e) => {
   keys.forEach((key, idx) => {

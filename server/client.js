@@ -1,14 +1,17 @@
 /*eslint no-console: "off"*/
 
 class Client {
-  constructor(connection) {
+  constructor(connection, id) {
     this.connection = connection;
+    this.id = id;
     this.session = null;
   }
-  send(msg) {
-    console.info(`Sending message ${msg}`);
+
+  send(data) {
+    const msg = JSON.stringify(data);
     this.connection.send(msg, (err) => {
       if (err) console.error('Sending failed', msg, err);
+      console.info(`Sending message ${msg}`);
     });
   }
 }
