@@ -5,23 +5,36 @@ class Client {
     this.connection = connection;
     this.id = id;
     this.session = null;
-    this.state = null;
+    this.state = {
+      arena: {
+        matrix: [],
+      },
+      player: {
+        matrix: [],
+        pos: {x: 0, y: 0},
+        score: 0,
+      },
+    };
   }
 
   broadcast(data) {
-    if (!this.session) throw new Error('No observable session available');
+    if (!this.session) {
+      throw new Error('No observable session available');
+    }
+
     data.clientId = this.id;
-    this.session.clients.forEach(client => {
-      if (this === client) return;
-      client.send(data);
-    });
+
+    [...this.session.clients]
+    .filter(client => client !== this)
+    .forEach(client => client.send(data));
   }
 
   send(data) {
     const msg = JSON.stringify(data);
-    this.connection.send(msg, (err) => {
-      if (err) console.error('Sending failed', msg, err);
-      console.info(`Sending message ${msg}`);
+    this.connection.send(msg, function ack (err) {
+      if (err) {
+        console.error('Sending failed', msg, err);
+      }      
     });
   }
 }
