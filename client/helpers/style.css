@@ -8,6 +8,7 @@ body {
   font-family: sans-serif;
   font-size: 2em;
   text-align: center;
+  position: relative;
 }
 
 h3 {
@@ -18,29 +19,6 @@ h3 {
   padding: 0;
 }
 
-.ctrl-group {
-  display: flex;
-  margin: 0 auto;
-  margin-bottom: 10px;
-  width: 80%;
-  justify-content: space-between;
-  align-items: center;
-}
-.ctrl-group span {
-  text-transform: uppercase;
-  font-size: 0.8em;
-}
-
-.ctrl-group .keys {
-  flex-grow: 1;
-  padding: 0 40px;
-  display: flex;
-  font-size: 0.7em;
-}
-.ctrl-group .keys b {
-  text-transform: uppercase;
-  margin-left: 10px;
-}
 .player {
   flex: 1 1 auto;
 }
